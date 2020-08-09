@@ -1,0 +1,8 @@
+[package]
+name = "constructive_topology"
+version = "0.1"
+lean_version = "leanprover-community/lean:3.18.4"
+path = "src"
+
+[dependencies]
+mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "49ba4c478073e5624e2c6f2ad2a5c94f1e69279c"}
