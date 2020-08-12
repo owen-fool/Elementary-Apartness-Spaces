@@ -36,13 +36,26 @@ structure point_set_apartness_space (α : Type) extends apartness.setoid_ppapart
 def real_ar : ℝ → ℝ → Prop :=
 λ x y, x ≠ y
 
+@[simp]
+lemma rar_neq (x y : ℝ) : real_ar x y ↔ x ≠ y :=
+begin
+  split; intro h; exact h,
+end
+
+def real_apart : ℝ → set ℝ → Prop :=
+λ x A, x ∉ A
+
+@[simp]
+lemma rap_nin (x : ℝ) (A : set ℝ) : real_apart x A ↔ x ∉ A :=
+begin split; intro h; exact h end
+
 @[instance]
 lemma real_ppapart : point_set_apartness_space ℝ := { r := λ x y, x = y,
   iseqv := eq_equivalence,
-  ar := λ x y, x ≠ y,
+  ar := λ x y, real_ar x y,
   ar_not_r := λ _ _ _, by finish,
   ar_symm := λ _ _ _, by finish,
-  apart := λ x A, x ∉ A,
+  apart := real_apart,
   ar_to_apart := λ _ _ _ _, by finish,
   apart_to_nin := λ _ _ p, p,
   apart_union_iff_apart_and_apart := by finish,
@@ -53,13 +66,22 @@ lemma real_ppapart : point_set_apartness_space ℝ := { r := λ x y, x = y,
 lemma ne_cotransitive (X : Type) : ∀ x z : X, x ≠ z → (∀ y : X, x ≠ y ∨ y ≠ z) :=
 by finish
 
-def apart (X : Type) (w : point_set_apartness_space X) :=
+def apart (X : Type) [w : point_set_apartness_space X] :=
 w.apart
 
-def set_diff (X : Type) (w : point_set_apartness_space X) : set X → set X → set X :=
-λ A S, A ∩ {x | (apart X w x S)}
+def apart_to_nin (X : Type) [w : point_set_apartness_space X] :=
+w.apart_to_nin
 
-def near (X : Type) (w : point_set_apartness_space X) :=
-λ x A, ∀ S, (apart X w x S → ∃ y, y ∈ set_diff X w A S)
+def set_diff (X : Type) [w : point_set_apartness_space X] : set X → set X → set X :=
+λ A S, A ∩ {x | (apart X x S)}
+
+def real_set_diff : set ℝ → set ℝ → set ℝ :=
+λ A S, A ∩ {x | real_apart x S}
+
+def near (X : Type) [w : point_set_apartness_space X] :=
+λ x A, ∀ S, (apart X x S → ∃ y, y ∈ set_diff X A S)
+
+def real_near :=
+λ x A, ∀ S, (real_apart x S → ∃ y, y ∈ real_set_diff A S)
 
 end point_set_apartness
